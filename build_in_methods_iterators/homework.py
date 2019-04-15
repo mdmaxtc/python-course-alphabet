@@ -1,4 +1,7 @@
 from typing import List, Dict, Union, Generator
+import random
+import string
+import math
 
 # We will work with such dicts
 ST = Dict[str, Union[str, int]]
@@ -14,8 +17,12 @@ def task_1_fix_names_start_letter(data: DT) -> DT:
         fix_names_start_letters([{'name': 'Alex', 'age': 26}, {'name': 'denys', 'age': 89}])
         >>> [{'name': 'Alex', 'age': 26}, {'name': 'Denys', 'age': 89}]
     """
-    pass
-
+    for i in data:
+        if 'name' in i:
+            i['name'] = i['name'].title()
+        else:
+            continue
+    return data
 
 def task_2_remove_dict_fields(data: DT, redundant_keys: List[str]) -> DT:
     """given_data
@@ -25,7 +32,12 @@ def task_2_remove_dict_fields(data: DT, redundant_keys: List[str]) -> DT:
        remove_dict_field([{'name': 'Alex', 'age': 26}, {'name': 'denys', 'age': 89}], 'age')
         >>> [{'name': 'Alex'}, {'name': 'denys'}]
     """
-    pass
+    # new_data = filter(lambda x: x.pop(redundant_keys), data)
+    # return new_data
+    for i in data:
+        for redundant_key in redundant_keys:
+            del i[redundant_key]
+    return data
 
 
 def task_3_find_item_via_value(data: DT, value) -> DT:
@@ -35,21 +47,23 @@ def task_3_find_item_via_value(data: DT, value) -> DT:
         find_item_via_value([{'name': 'Alex', 'age': 26}, {'name': 'denys', 'age': 89}], 26)
         >>> [{'name': 'Alex', 'age': 26}]
     """
-    pass
+    return [i for i in data if i['name'] == 'SuperMan']
 
 
 def task_4_min_value_integers(data: List[int]) -> int:
     """
     Find and return minimum value from list
     """
-    pass
+    if data:
+        return min(data)
 
 
 def task_5_min_value_strings(data: List[Union[str, int]]) -> str:
     """
     Find the longest string
     """
-    pass
+    if data:
+        return min([str(i) for i in data], key=len)
 
 
 def task_6_min_value_list_of_dicts(data: DT, key: str) -> ST:
@@ -58,21 +72,21 @@ def task_6_min_value_list_of_dicts(data: DT, key: str) -> ST:
     Returns:
 
     """
-    pass
+    return [i for i in data if i.get(key) == min([i.get(key, 100) for i in data])][0]
 
 
 def task_7_max_value_list_of_lists(data: List[List[int]]) -> int:
     """
     Find max value from list of lists
     """
-    pass
+    return max([max(i) for i in data if i])
 
 
 def task_8_sum_of_ints(data: List[int]) -> int:
     """
     Find sum of all items in given list
     """
-    pass
+    return sum(data)
 
 
 def task_9_sum_characters_positions(text: str) -> int:
@@ -88,12 +102,15 @@ def task_9_sum_characters_positions(text: str) -> int:
         >>> 532
 
     """
-    pass
+    counter = 0
+    for i in list(text):
+        counter += ord(i)
+    return counter
 
 
 def task_10_generator_of_simple_numbers() -> Generator[int, None, None]:
     """
-    Return generator of simple numbers
+    Return generator of prime numbers
     Stop then iteration if returned value is more than 200
     Examples:
         a = task_10_generator_of_simple_numbers()
@@ -102,7 +119,9 @@ def task_10_generator_of_simple_numbers() -> Generator[int, None, None]:
         next(a)
         >>> 3
     """
-    pass
+    for i in range(2, 201):
+        if all(i % j != 0 for j in range(2, int(math.sqrt(i)) + 1)):
+            yield i
 
 
 def task_11_create_list_of_random_characters() -> List[str]:
@@ -110,4 +129,4 @@ def task_11_create_list_of_random_characters() -> List[str]:
     Create list of 20 elements where each element is random letter from latin alphabet
 
     """
-    pass
+    return random.sample(string.ascii_lowercase, 20)
