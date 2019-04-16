@@ -47,7 +47,7 @@ def task_3_find_item_via_value(data: DT, value) -> DT:
         find_item_via_value([{'name': 'Alex', 'age': 26}, {'name': 'denys', 'age': 89}], 26)
         >>> [{'name': 'Alex', 'age': 26}]
     """
-    return [i for i in data if i['name'] == 'SuperMan']
+    return [i for i in data if i['name'] == value]
 
 
 def task_4_min_value_integers(data: List[int]) -> int:
