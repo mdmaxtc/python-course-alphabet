@@ -42,7 +42,7 @@ def task_2_remove_dict_fields(data: DT, redundant_keys: List[str]) -> DT:
 
 def task_3_find_item_via_value(data: DT, value) -> DT:
     """
-    Find and return all items that has @searching value in any key
+    Find and return all items has @searching value in any key
     Examples:
         find_item_via_value([{'name': 'Alex', 'age': 26}, {'name': 'denys', 'age': 89}], 26)
         >>> [{'name': 'Alex', 'age': 26}]
@@ -60,7 +60,7 @@ def task_4_min_value_integers(data: List[int]) -> int:
 
 def task_5_min_value_strings(data: List[Union[str, int]]) -> str:
     """
-    Find the longest string
+    Find the shortest string
     """
     if data:
         return min([str(i) for i in data], key=len)
@@ -102,10 +102,7 @@ def task_9_sum_characters_positions(text: str) -> int:
         >>> 532
 
     """
-    counter = 0
-    for i in list(text):
-        counter += ord(i)
-    return counter
+    return sum(map(lambda x: ord(x), text))
 
 
 def task_10_generator_of_simple_numbers() -> Generator[int, None, None]:
