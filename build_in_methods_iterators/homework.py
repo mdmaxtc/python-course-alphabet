@@ -59,8 +59,7 @@ def task_5_min_value_strings(data: List[Union[str, int]]) -> str:
     """
     Find the shortest string
     """
-    if data:
-        return min([str(i) for i in data], key=len)
+    return min([str(string) for string in data], default=None)
 
 
 def task_6_min_value_list_of_dicts(data: DT, key: str) -> ST:
