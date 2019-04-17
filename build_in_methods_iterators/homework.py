@@ -68,7 +68,7 @@ def task_6_min_value_list_of_dicts(data: DT, key: str) -> ST:
     Returns:
 
     """
-    return [i for i in data if i.get(key) == min([i.get(key, 100) for i in data])][0]
+    return sorted([i for i in data if key in i], key=lambda i: i[key])[0]
 
 
 def task_7_max_value_list_of_lists(data: List[List[int]]) -> int:
