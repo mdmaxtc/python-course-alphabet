@@ -32,10 +32,12 @@ def task_2_remove_dict_fields(data: DT, redundant_keys: List[str]) -> DT:
        remove_dict_field([{'name': 'Alex', 'age': 26}, {'name': 'denys', 'age': 89}], 'age')
         >>> [{'name': 'Alex'}, {'name': 'denys'}]
     """
-    for i in data:
-        for redundant_key in redundant_keys:
-            del i[redundant_key]
-    return data
+    def deleting_keys(dictionary):
+        for key in set(dictionary.keys()) & set(redundant_keys):
+            del dictionary[key]
+        return dictionary
+
+    return list(map(deleting_keys, data))
 
 
 def task_3_find_item_via_value(data: DT, value) -> DT:
@@ -68,14 +70,14 @@ def task_6_min_value_list_of_dicts(data: DT, key: str) -> ST:
     Returns:
 
     """
-    return sorted([i for i in data if key in i], key=lambda i: i[key])[0]
+    return min(filter(lambda i: key in i, data), key=lambda i: i[key])
 
 
 def task_7_max_value_list_of_lists(data: List[List[int]]) -> int:
     """
     Find max value from list of lists
     """
-    return max([max(i) for i in data if i])
+    return max([max(i, default=0) for i in data])
 
 
 def task_8_sum_of_ints(data: List[int]) -> int:
