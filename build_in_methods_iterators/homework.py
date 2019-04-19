@@ -1,7 +1,6 @@
 from typing import List, Dict, Union, Generator
 import random
 import string
-import math
 
 # We will work with such dicts
 ST = Dict[str, Union[str, int]]
