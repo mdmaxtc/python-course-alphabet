@@ -143,15 +143,6 @@ class Cesar:
         else:
             print(f'The {self.name} has bought this garage already.')
 
-    def most_empty(self):
-        most_empty = self.garages[0]
-        for i in range(1, len(self.garages)):
-            if self.garages[i].free_places > most_empty.free_places:
-                most_empty = self.garages[i]
-        if most_empty.free_places == 0:
-            return None
-        return most_empty
-
     def add_car(self, car, garage):
         if garage in self.garages:
             garage.add(car)
