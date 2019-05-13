@@ -189,5 +189,3 @@ class Cesar:
         else:
             garage.add_car(car)
             car.owner = self.register_id
-
-Garage('LONDON', 2, [car1, car2, car3])
