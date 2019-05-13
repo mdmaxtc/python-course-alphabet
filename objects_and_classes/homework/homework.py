@@ -89,39 +89,39 @@ class Car:
 
 
 class Garage:
-
     cars = List[Car]
 
     def __init__(self, town, places: int, cars=None, owner=None):
-        self.cars = cars if cars is not None else []
+
         self.places = places
-        self.available_places = self.places - len(self.cars)
         self.owner = owner
         if town in TOWNS:
             self.town = town
         else:
             print("Did you get lost? Only town from TOWNS is allowed!")
+        self.cars = []
+        if cars:
+            for car in cars:
+                self.add_car(car)
 
     def __str__(self):
         return f"This garage is located in {self.town}. It has {self.places} places. " \
-            f"There is(are) {len(self.cars)} car(s). Owner name is {self.owner}."
+               f"There is(are) {len(self.cars)} car(s). Owner name is {self.owner}."
 
     def add_car(self, car: Car):
         if car in self.cars:
             print('This car is already here')
         elif car.owner:
             print('This car is already in another garage')
-        elif self.available_places > 0:
+        elif len(self.cars) < self.places:
             self.cars.append(car)
             car.owner = self.owner
         else:
             print("The garage is full!")
-        self.available_places -= 1
 
     def remove(self, car: Car):
         self.cars.remove(car)
         car.owner = None
-        self.available_places += 1
 
     def hit_hat(self):
         return sum(car.price for car in self.cars)
@@ -190,3 +190,4 @@ class Cesar:
             garage.add_car(car)
             car.owner = self.register_id
 
+Garage('LONDON', 2, [car1, car2, car3])

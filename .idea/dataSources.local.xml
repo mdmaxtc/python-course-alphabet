@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="cursor_db@localhost" uuid="c560b186-e349-4e1a-8ac4-75f6ddfaa6b1">
+      <database-info product="PostgreSQL" version="11.2" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.5">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>xtc</user-name>
+      <introspection-schemas>cursor_db:public</introspection-schemas>
+    </data-source>
+  </component>
+</project>
