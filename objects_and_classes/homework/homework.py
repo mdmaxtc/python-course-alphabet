@@ -111,7 +111,7 @@ class Garage:
             print('This car is already here')
         elif car.owner:
             print('This car is already in another garage')
-        elif self.available_places > 0:
+        elif len(self.cars) < self.available_places:
             self.cars.append(car)
             car.owner = self.owner
         else:
