@@ -46,24 +46,28 @@
 
     Колекціонерів можна порівнювати за ціною всіх їх автомобілів.
 """
+
+import uuid
 from typing import List
 from constants import CARS_TYPES, CARS_PRODUCER, TOWNS
-from uuid import uuid4
-import random
+
+
 
 
 class Car:
-
-    def __init__(self, producer, type, price, mileage):
-        self.price = float(price)
-        self.mileage = float(mileage)
-        self.number = uuid4().hex
-        if type in CARS_TYPES and producer in CARS_PRODUCER:
-            self.type = type
+    def __init__(self, car_type, producer, price: float, mileage: float):
+        self.price = price
+        self.number = uuid.uuid4()
+        self.mileage = mileage
+        self.owner = None
+        if car_type in CARS_TYPES:
+            self.car_type = car_type
+        else:
+            raise ValueError('Received unexpected data "{}"'.format(car_type))
+        if producer in CARS_PRODUCER:
             self.producer = producer
         else:
-            print("Only position from CARS_TYPES and CARS_PRODUCER is allowed!")
-            raise ValueError
+            raise ValueError('Received unexpected data "{}"'.format(producer))
 
     def __eq__(self, other):
         return self.price == other.price
@@ -85,44 +89,60 @@ class Car:
 
 
 class Garage:
-    cars: List[Car]
+
+    cars = List[Car]
 
     def __init__(self, town, places: int, cars=None, owner=None):
-        self.cars = cars
-        self.parking_places = parking_places
+        self.cars = cars if cars is not None else []
+        self.places = places
+        self.available_places = self.places - len(self.cars)
         self.owner = owner
-        self.free_places = self.places - len(self.cars)
         if town in TOWNS:
             self.town = town
         else:
             print("Did you get lost? Only town from TOWNS is allowed!")
 
     def __str__(self):
-        return f"{self.town}, {self.parking_places}, {self.cars}, {self.owner}"
+        return f"This garage is located in {self.town}. It has {self.places} places. " \
+            f"There is(are) {len(self.cars)} car(s). Owner name is {self.owner}."
 
-    def add_car_to_garage(self, car: Car):
-        if self.parking_places <= len(self.cars):
-            print("The garage is full!")
-        else:
+    def add_car(self, car: Car):
+        if car in self.cars:
+            print('This car is already here')
+        elif car.owner:
+            print('This car is already in another garage')
+        elif self.available_places > 0:
             self.cars.append(car)
+            car.owner = self.owner
+        else:
+            print("The garage is full!")
+        self.available_places -= 1
 
-    def remove_car(self, car: Car):
+    def remove(self, car: Car):
         self.cars.remove(car)
+        car.owner = None
+        self.available_places += 1
 
     def hit_hat(self):
-        return sum([car.price for car in self.cars])
+        return sum(car.price for car in self.cars)
+
 
 
 class Cesar:
+
     garages = List[Garage]
+    garage: Garage
 
     def __init__(self, name: str, garages=None):
         self.name = name
-        self.garages = garages
-        self.register_id = uuid4().hex
+        self.register_id = uuid.uuid4()
+        self.garages = garages if garages is not None else []
+        if garages:
+            for garage in garages:
+                garage.owner = self.register_id
 
     def __str__(self):
-        return f'{self.name}: {self.garages}'
+        return f'Cesar name is {self.name}. He has {self.garages}. His id is {self.register_id}.'
 
     def __eq__(self, other):
         return self.hit_hat() == other.hit_hat()
@@ -130,33 +150,23 @@ class Cesar:
     def __ne__(self, other):
         return self.hit_hat() != other.hit_hat()
 
-    def __lt__(self, other):
-        return self.hit_hat() < other.hit_hat()
-
     def __gt__(self, other):
         return self.hit_hat() > other.hit_hat()
 
+    def __lt__(self, other):
+        return self.hit_hat() < other.hit_hat()
+
     def add_garage(self, garage: Garage):
-        if garage.owner == None:
-            self.garages.append(garage)
-            garage.owner = self.register_id
-        else:
+        if garage.owner:
             print(f'The {self.name} has bought this garage already.')
-
-    def most_empty(self):
-        most_empty = self.garages[0]
-        for i in range(1, len(self.garages)):
-            if self.garages[i].free_places > most_empty.free_places:
-                most_empty = self.garages[i]
-        if most_empty.free_places == 0:
-            return None
-        return most_empty
-
-    def add_car(self, car, garage):
-        if garage in self.garages:
-            garage.add(car)
         else:
-            print(f'The {self.name} hasn`t bought this garage')
+            garage.owner = self.register_id
+            self.garages.append(garage)
+            for car in garage.cars:
+                car.owner = self.register_id
+
+    def hit_hat(self):
+        return sum(garage.hit_hat() for garage in self.garages)
 
     def garages_count(self):
         return len(self.garages)
@@ -164,11 +174,19 @@ class Cesar:
     def cars_count(self):
         return sum([len(garage.cars) for garage in self.garages])
 
-    def hit_hat(self):
-        return sum([garage.hit_hat() for garage in self.garages])
+    def most_empty_garage(self):
+        return max(self.garages, key=lambda garage: garage.available_places, default = None)
 
+    def add_car(self, car: Car, garage=None):
+        if garage is None:
+            self.most_empty_garage().add_car(car)
+        elif garage not in self.garages:
+            print('This is not your garage!')
+        elif car in garage.cars:
+            print('This car is already yours!')
+        elif garage.available_places == 0:
+            print('The garage is full! Choose another one.')
+        else:
+            garage.add_car(car)
+            car.owner = self.register_id
 
-car1 = Car(random.choice(CARS_PRODUCER), random.choice(CARS_TYPES),
-           random.randrange(100, 1000), random.randrange(100, 2000), )
-
-print(car1)
