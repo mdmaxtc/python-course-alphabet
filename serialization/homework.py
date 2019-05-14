@@ -17,7 +17,6 @@ Advanced
 Добавити опрацьовку формату ini
 
 """
-import sys
 from typing import List
 from objects_and_classes.homework.constants import CARS_TYPES, CARS_PRODUCER, TOWNS
 from uuid import uuid4
@@ -27,24 +26,47 @@ from ruamel.yaml import YAML, yaml_object
 from ruamel.yaml.compat import StringIO
 
 
-class NewYaml(YAML):  # This class would not appear here without Pavlo Zubariev's help !
-    def dump(self, data, stream=None, **kw):
-        inefficient = False
-        if stream is None:
-            inefficient = True
-            stream = StringIO()
-        YAML.dump(self, data, stream, **kw)
-        if inefficient:
-            return stream.getvalue()
+class JsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Car):
+            return dict(Car=dict(price=obj.price, car_type=obj.car_type, producer=obj.producer, mileage=obj.mileage,
+                                 number=obj.number))
+        if isinstance(obj, Garage):
+            return dict(Garage=dict(town=obj.town, places=obj.places, owner=obj.owner, cars_in_garage=obj.cars_in_garage,
+                                    free_places=obj.free_places))
+        if isinstance(obj, Cesar):
+            return dict(Cesar=dict(name=obj.name, garages=obj.garages, register_id=obj.register_id))
+        return json.JSONEncoder.default(self, obj)
 
-yaml = NewYaml()
+
+def json_hook(obj):
+    if "Car" in obj:
+        price = obj["Car"]["price"]
+        car_type = obj["Car"]["car_type"]
+        producer = obj["Car"]["producer"]
+        mileage = obj["Car"]["mileage"]
+        new_obj = Car(price=price, car_type=car_type, producer=producer, mileage=mileage)
+        new_obj.number = obj["Car"].get("number", uuid4().hex)
+        return new_obj
+
+    if "Garage" in obj:
+        town = obj["Garage"]["town"]
+        places = obj["Garage"]["places"]
+        cars_in_garage = obj["Garage"]["cars_in_garage"]
+        new_obj = Garage(town=town, places=places, cars=cars_in_garage)
+        return new_obj
+
+    if "Cesar" in obj:
+        name = obj["Cesar"]["name"]
+        garages = obj["Cesar"]["garages"]
+        new_obj = Cesar(name=name, garages=garages)
+        new_obj.register_id = obj["Cesar"].get("register_id", uuid4().hex)
+        return new_obj
+
+    return obj
 
 
-@yaml_object(yaml)
 class Car:
-
-    yaml = NewYaml()
-
     def __init__(self, car_type, producer, price: float, mileage: float):
         self.price = price
         self.number = uuid.uuid4()
@@ -78,81 +100,60 @@ class Car:
         self.number = uuid.uuid4()
 
     @staticmethod
-    def json_default(obj):  # encoder
-        data = {"producer": obj.producer,
-                "car_type": obj.car_type,
-                "price": obj.price,
-                "mileage": obj.mileage,
-                "number": obj.number,
-                "owner": obj.owner}
-        return data
-
-    @classmethod
-    def json_hook(cls, data):  # decoder
-        producer = data['producer']
-        car_type = data['car_type']
-        price = data['price']
-        mileage = data['mileage']
-        car = Car(producer=producer,
-                  car_type=car_type,
-                  price=price,
-                  mileage=mileage)
-        car.number = data.get('number')
-        car.owner = data.get('owner')
-        return car
-
-    def json_serialize_to_string(self):
-        return json.dumps(self, default=Car.json_default, indent=4)
-
-    def json_serialize_to_file(self, json_file):
-        with open(json_file, 'w') as file:
-            json.dump(self, file, default=Car.json_default, indent=4)
+    def from_yaml_str(obj):
+        yaml = YAML()
+        return yaml.load(obj)
 
     @staticmethod
-    def json_deserialize_from_string(obj):
-        return json.loads(obj, object_hook=Car.json_hook)
+    def from_yaml_file(yaml_file):
+        yaml = YAML()
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
 
-    @staticmethod
-    def json_deserialize_from_file(json_file):
-        with open(json_file, 'r') as file:
-            return json.load(file, object_hook=Car.json_hook)
+    def to_yaml_str(self):
+        yaml = YAML()
+        yaml.register_class(Car)
+        return yaml.dump(self, stream=StringIO())
 
-    def pickle_serialize_to_string(self):
-        return pickle.dumps(self)
-
-    def pickle_serialize_to_file(self, file_name):
-        with open(file_name, "wb") as file:
-            pickle.dump(self, file)
-
-    @staticmethod
-    def pickle_deserialize_from_string(obj):
-        return pickle.loads(obj)
-
-    @staticmethod
-    def pickle_deserialize_from_file(pickle_file):
-        with open(pickle_file, 'rb') as file:
-            return pickle.load(file)
-
-    def yaml_serialise_to_string(self):
-        return yaml.dump(self)
-
-    def yaml_serialize_to_file(self, file_name):
+    def to_yaml_file(self, file_name):
+        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
-    def yaml_deserialize_from_string(obj):
-        return yaml.load(obj)
+    def from_json_file(json_file):
+        with open(json_file, 'r') as f:
+            return json.load(f, object_hook=json_hook)
 
     @staticmethod
-    def yaml_deserialize_from_file(yaml_file):
-        with open(yaml_file, 'r') as file:
-            return yaml.load(file)
+    def from_json_str(json_str):
+        return json.loads(json_str, object_hook=json_hook)
+
+    def to_json_file(self, json_file):
+        with open(json_file, 'w') as f:
+            json.dump(self, f, cls=JsonEncoder, indent=4)
+
+    def to_json_str(self):
+        return json.dumps(self, cls=JsonEncoder, indent=4)
+
+    @staticmethod
+    def from_pickle_str(pickle_str):
+        return pickle.loads(pickle_str)
+
+    @staticmethod
+    def from_pickle_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+    def to_pickle_str(self):
+        return pickle.dumps(self)
+
+    def to_pickle_file(self, pickle_file):
+        with open(pickle_file, 'wb') as file:
+            pickle.dump(self, file)
 
 
-@yaml_object(yaml)
 class Garage:
-    yaml = NewYaml()
     cars = List[Car]
 
     def __init__(self, town, places: int, cars=None, owner=None):
@@ -190,74 +191,57 @@ class Garage:
         return sum(car.price for car in self.cars)
 
     @staticmethod
-    def json_default(obj):  # encoder
-        cars = json.dumps(obj.cars, default=Car.json_default)
-        data = {'town': obj.town,
-                'places': obj.places,
-                'cars': cars,
-                'owner': obj.owner,
-                'free_places': obj.free_places}
-        return data
-
-    @classmethod
-    def json_hook(cls, data):  # decoder
-        town = data['town']
-        places = data['places']
-        cars = json.loads(data['cars'], object_hook=Car.json_hook)
-        garage = Garage(town=town,
-                        places=places,
-                        cars=cars)
-        garage.free_places = data.get('free_places')
-        garage.owner = data.get('owner')
-        return garage
-
-    def json_serialize_to_string(self):
-        return json.dumps(self, default=Garage.json_default, indent=4)
-
-    def json_serialize_to_file(self, json_file):
-        with open(json_file, 'w') as file:
-            json.dump(self, file, default=Garage.json_default, indent=4)
+    def from_yaml_str(obj):
+        yaml = YAML()
+        return yaml.load(obj)
 
     @staticmethod
-    def json_deserialize_from_string(obj):
-        return json.loads(obj, object_hook=Garage.json_hook)
+    def from_yaml_file(yaml_file):
+        yaml = YAML()
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
 
-    @staticmethod
-    def json_deserialize_from_file(json_file):
-        with open(json_file, 'r') as file:
-            return json.load(file, object_hook=Garage.json_hook)
+    def to_yaml_str(self):
+        yaml = YAML()
+        yaml.register_class(Car)
+        return yaml.dump(self, stream=StringIO())
 
-    def pickle_serialize_to_string(self):
-        return pickle.dumps(self)
-
-    def pickle_serialize_to_file(self, file_name):
-        with open(file_name, "wb") as file:
-            pickle.dump(self, file)
-
-    @staticmethod
-    def pickle_deserialize_from_string(obj):
-        return pickle.loads(obj)
-
-    @staticmethod
-    def pickle_deserialize_from_file(pickle_file):
-        with open(pickle_file, 'rb') as file:
-            return pickle.load(file)
-
-    def yaml_serialise_to_string(self):
-        return yaml.dump(self)
-
-    def yaml_serialize_to_file(self, file_name):
+    def to_yaml_file(self, file_name):
+        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
-    def yaml_deserialize_from_string(obj):
-        return yaml.load(obj)
+    def from_json_file(json_file):
+        with open(json_file, 'r') as f:
+            return json.load(f, object_hook=json_hook)
 
     @staticmethod
-    def yaml_deserialize_from_file(yaml_file):
-        with open(yaml_file, 'r') as file:
-            return yaml.load(file)
+    def from_json_str(json_str):
+        return json.loads(json_str, object_hook=json_hook)
+
+    def to_json_file(self, json_file):
+        with open(json_file, 'w') as f:
+            json.dump(self, f, cls=JsonEncoder, indent=4)
+
+    def to_json_str(self):
+        return json.dumps(self, cls=JsonEncoder, indent=4)
+
+    @staticmethod
+    def from_pickle_str(pickle_str):
+        return pickle.loads(pickle_str)
+
+    @staticmethod
+    def from_pickle_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+    def to_pickle_str(self):
+        return pickle.dumps(self)
+
+    def to_pickle_file(self, pickle_file):
+        with open(pickle_file, 'wb') as file:
+            pickle.dump(self, file)
 
 
 @yaml_object(yaml)
@@ -324,66 +308,54 @@ class Cesar:
             car.owner = self.register_id
 
     @staticmethod
-    def json_default(obj):  # encoder
-        garages = json.dumps(obj.garages, default=Garage.json_default)
-        data = {'name': obj.name,
-                'garages': garages,
-                'register_id': obj.register_id}
-        return data
-
-    @classmethod
-    def json_hook(cls, data):  # decoder
-        name = data['name']
-        garages = json.loads(data['garages'], object_hook=Garage.json_hook)
-        cesar = Cesar(name=name,
-                      garages=garages)
-        cesar.register_id = data.get('register_id')
-        return cesar
-
-    def json_serialize_to_string(self):
-        return json.dumps(self, default=Cesar.json_default, indent=4)
-
-    def json_serialize_to_file(self, json_file):
-        with open(json_file, 'w') as file:
-            json.dump(self, file, default=Cesar.json_default, indent=4)
+    def from_yaml_str(obj):
+        yaml = YAML()
+        return yaml.load(obj)
 
     @staticmethod
-    def json_deserialize_from_string(obj):
-        return json.loads(obj, object_hook=Cesar.json_hook)
+    def from_yaml_file(yaml_file):
+        yaml = YAML()
+        with open(yaml_file, 'r') as file:
+            return yaml.load(file)
 
-    @staticmethod
-    def json_deserialize_from_file(json_file):
-        with open(json_file, 'r') as file:
-            return json.load(file, object_hook=Cesar.json_hook)
+    def to_yaml_str(self):
+        yaml = YAML()
+        yaml.register_class(Car)
+        return yaml.dump(self, stream=StringIO())
 
-    def pickle_serialize_to_string(self):
-        return pickle.dumps(self)
-
-    def pickle_serialize_to_file(self, file_name):
-        with open(file_name, "wb") as file:
-            pickle.dump(self, file)
-
-    @staticmethod
-    def pickle_deserialize_from_string(obj):
-        return pickle.loads(obj)
-
-    @staticmethod
-    def pickle_deserialize_from_file(pickle_file):
-        with open(pickle_file, 'rb') as file:
-            return pickle.load(file)
-
-    def yaml_serialise_to_string(self):
-        return yaml.dump(self)
-
-    def yaml_serialize_to_file(self, file_name):
+    def to_yaml_file(self, file_name):
+        yaml = YAML()
         with open(file_name, 'w') as file:
             yaml.dump(self, file)
 
     @staticmethod
-    def yaml_deserialize_from_string(obj):
-        return yaml.load(obj)
+    def from_json_file(json_file):
+        with open(json_file, 'r') as f:
+            return json.load(f, object_hook=json_hook)
 
     @staticmethod
-    def yaml_deserialize_from_file(yaml_file):
-        with open(yaml_file, 'r') as file:
-            return yaml.load(file)
+    def from_json_str(json_str):
+        return json.loads(json_str, object_hook=json_hook)
+
+    def to_json_file(self, json_file):
+        with open(json_file, 'w') as f:
+            json.dump(self, f, cls=JsonEncoder, indent=4)
+
+    def to_json_str(self):
+        return json.dumps(self, cls=JsonEncoder, indent=4)
+
+    @staticmethod
+    def from_pickle_str(pickle_str):
+        return pickle.loads(pickle_str)
+
+    @staticmethod
+    def from_pickle_file(pickle_file):
+        with open(pickle_file, 'rb') as file:
+            return pickle.load(file)
+
+    def to_pickle_str(self):
+        return pickle.dumps(self)
+
+    def to_pickle_file(self, pickle_file):
+        with open(pickle_file, 'wb') as file:
+            pickle.dump(self, file)
