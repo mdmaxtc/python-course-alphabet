@@ -326,7 +326,7 @@ class House:
         if roll_width_m == 0 or roll_length_m == 0:
             raise ValueError("Sorry length must be not 0")
         else:
-            return sum([wall.number_of_rolls_of_wallpaper() for wall in self.__walls])
+            return sum([wall.number_of_rolls_of_wallpaper(roll_width_m, roll_length_m) for wall in self.__walls])
 
     def get_room_square(self):
         return self.get_walls_square() - self.get_door_square() - self.get_windows_square()
