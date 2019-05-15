@@ -44,7 +44,7 @@ class Cat:
         elif product == "milk":
             self._increase_saturation_level(2)
         else:
-            print("There is no such product!")  # Oleh Smaha thanks!
+            print("There is no such product")  # Thanks to Oleh Smaha
 
     def _reduce_saturation_level(self, value):
         self.saturation_level -= value
@@ -96,7 +96,7 @@ class Cheetah(Cat):
       if product eq rabbit use _increase_saturation_level from parent class with value 15
     * Redefine method _set_average_speed
       if age less or eq 5 return 90
-      if age between 5 and 15(including) return 90
+      if age between 5 and 15(including) return 75
       if age grosser 15(not including) return 40
     """
     def eat(self, product):
@@ -105,16 +105,15 @@ class Cheetah(Cat):
         elif product == "rabbit":
             self._increase_saturation_level(15)
         else:
-            print("There is no such product")  # Oleh Smaha THANKS
+            print("There is no such product") # Thanks to Oleh Smaha
 
     def _set_average_speed(self):
         if self.age <= 5:
             return 90
         elif 5 < self.age <= 15:
             return 75
-        elif self.age > 16:
+        elif self.age > 15:
             return 40
-
 
 class Wall:
     """
@@ -139,7 +138,7 @@ class Wall:
         try:
             return math.ceil((self.width / roll_width_m) / math.floor(roll_length_m / self.height))
         except ZeroDivisionError:
-            print("Wallpapers to short")
+            print("There is no enough of wallpapers")
             # all class thanks to Oleh Smaha
 
 
@@ -208,7 +207,7 @@ class Door:
         elif material == "metal":
             return self.door_square() * self.metal_price
         else:
-            raise ValueError("Sorry we don't have such material")
+            raise ValueError("Only wood or metal doors is available")
 
     def update_wood_price(self, new_price):
         self.wood_price = new_price
@@ -265,36 +264,34 @@ class House:
         self.__door = None
 
     def create_wall(self, width, height):
-        if len(self.__walls) > 4:
-            raise ValueError("Our house can not have more than 4 walls")
+        if len(self.__walls) == 4:
+            raise ValueError("Not more than 4 walls!")
         elif width == 0 or height == 0:
             raise ValueError("Value must be not 0")
         else:
-            wall = Wall(width, height)
-            self.__wall.append(wall)
+            self.__walls.append(Wall(width, height))
 
     def create_roof(self, width, height, roof_type):
-        if width == 0 or height == 0:
-            raise ValueError("Value must be not 0")
-        if self.__roof is None:
-            self.__roof = Roof(width, height, roof_type)
+        if self.__roof is not None:
+            raise ValueError("Only one roof, lol")
+        elif width == 0 or height == 0:
+            raise ValueError("And w/o roof it will not work too")
         else:
-            raise ValueError("The house can not have two roofs")
+            self.__roof = Roof(width, height, roof_type)
 
     def create_window(self, width, height):
         if width == 0 or height == 0:
-            raise ValueError("Value must be not 0")
+            raise ValueError("We are really need at least 1 window")
         else:
-            window = Window(width, height)
-            self.__windows.append(window)
+            self.__windows.append(Window(width, height))
 
     def create_door(self, width, height):
-        if width == 0 or height == 0:
-            raise ValueError("Value must be not 0")
-        if self.__door is None:
-            self.__door = Door(width, height)
+        if self.__door is not None:
+            raise ValueError("One door please")
+        elif width == 0 or height == 0:
+            raise ValueError("At least one door is neccessary")
         else:
-            raise ValueError("The house can not have two doors")
+            self.__door = Door(width, height)
 
     def get_count_of_walls(self):
         return len(self.__walls)
