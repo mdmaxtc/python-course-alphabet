@@ -43,7 +43,7 @@ class Cat:
         elif product == "milk":
             self._increase_saturation_level(2)
         else:
-            raise ValueError("There is no such product!")
+            print("There is no such product!") # Oleh Smaha thanks!
 
     def _reduce_saturation_level(self, value):
         self.saturation_level -= value
@@ -58,7 +58,7 @@ class Cat:
     def _set_average_speed(self):
         if self.age <= 7:
             return 12
-        elif self.age in range(8, 11):
+        elif 7 < self.age <= 10:
             return 9
         elif self.age > 10:
             return 6
@@ -71,7 +71,7 @@ class Cat:
             self._reduce_saturation_level(5)
         elif 50 < run_km <= 100:
             self._reduce_saturation_level(15)
-        elif run_km in range(101, 201):
+        elif 100 < run_km <= 200:
             self._reduce_saturation_level(25)
         elif run_km > 200:
             self._reduce_saturation_level(50)
@@ -79,7 +79,7 @@ class Cat:
 
     def get_saturation_level(self):
         if self.saturation_level == 0:
-            return print("Your cat is died :(")
+            return print('Your cat is died :(')
         else:
             return self.saturation_level
 
@@ -104,13 +104,13 @@ class Cheetah(Cat):
         elif product == "rabbit":
             self._increase_saturation_level(15)
         else:
-            raise ValueError("There is no such product")
+            print("There is no such product") #Oleh Smaha THANKS
 
     def _set_average_speed(self):
         if self.age <= 5:
             return 90
-        elif self.age in range(6, 16):
-            return 90
+        elif 5 < self.age <= 15:
+            return 75
         elif self.age > 16:
             return 40
 
@@ -135,11 +135,11 @@ class Wall:
         return self.width * self.height
 
     def number_of_rolls_of_wallpaper(self, roll_width_m, roll_length_m):
-        wallpaper_square = roll_length_m * roll_width_m
-        if self.wall_square() % wallpaper_square == 0:
-            return int(self.wall_square() / wallpaper_square)
-        else:
-            return int(self.wall_square() / wallpaper_square + 1)
+        try:
+            return math.ceil((self.width / roll_width_m) / math.floor(roll_length_m / self.height))
+        except ZeroDivisionError:
+            print("Wallpapers to short")
+            #all class thanks to Oleh Smaha
 
 
 class Roof:
