@@ -36,6 +36,7 @@ class JsonEncoder(json.JSONEncoder):
                                     free_places=obj.free_places))
         if isinstance(obj, Cesar):
             return dict(Cesar=dict(name=obj.name, garages=obj.garages, register_id=obj.register_id))
+
         return json.JSONEncoder.default(self, obj)
 
 
@@ -244,9 +245,7 @@ class Garage:
             pickle.dump(self, file)
 
 
-@yaml_object(yaml)
 class Cesar:
-    yaml = NewYaml()
     garages = List[Garage]
     garage: Garage
 
