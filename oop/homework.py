@@ -64,7 +64,7 @@ class Cat:
             return 6
 
     def run(self, hours):
-        run_km = hours * self.average_speed
+        run_km = self.average_speed * hours
         if run_km <= 25:
             self._reduce_saturation_level(2)
         elif 25 < run_km <= 50:
