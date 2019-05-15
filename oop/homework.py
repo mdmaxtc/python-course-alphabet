@@ -79,7 +79,7 @@ class Cat:
 
     def get_saturation_level(self):
         if self.saturation_level == 0:
-            return print('Your cat is died :(')
+            return 'Your cat is died :('
         else:
             return self.saturation_level
 
