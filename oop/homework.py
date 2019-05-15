@@ -1,3 +1,4 @@
+import math
 
 class Cat:
     """
@@ -43,7 +44,7 @@ class Cat:
         elif product == "milk":
             self._increase_saturation_level(2)
         else:
-            print("There is no such product!") # Oleh Smaha thanks!
+            print("There is no such product!")  # Oleh Smaha thanks!
 
     def _reduce_saturation_level(self, value):
         self.saturation_level -= value
@@ -64,7 +65,7 @@ class Cat:
             return 6
 
     def run(self, hours):
-        run_km = self.average_speed * hours
+        run_km = hours * self.average_speed
         if run_km <= 25:
             self._reduce_saturation_level(2)
         elif 25 < run_km <= 50:
@@ -79,7 +80,7 @@ class Cat:
 
     def get_saturation_level(self):
         if self.saturation_level == 0:
-            return 'Your cat is died :('
+            return "Your cat is died :("
         else:
             return self.saturation_level
 
@@ -104,7 +105,7 @@ class Cheetah(Cat):
         elif product == "rabbit":
             self._increase_saturation_level(15)
         else:
-            print("There is no such product") #Oleh Smaha THANKS
+            print("There is no such product")  # Oleh Smaha THANKS
 
     def _set_average_speed(self):
         if self.age <= 5:
@@ -139,7 +140,7 @@ class Wall:
             return math.ceil((self.width / roll_width_m) / math.floor(roll_length_m / self.height))
         except ZeroDivisionError:
             print("Wallpapers to short")
-            #all class thanks to Oleh Smaha
+            # all class thanks to Oleh Smaha
 
 
 class Roof:
