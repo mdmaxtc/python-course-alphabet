@@ -136,7 +136,7 @@ class Wall:
 
     def number_of_rolls_of_wallpaper(self, roll_width_m, roll_length_m):
         try:
-            return math.ceil((self.width / roll_width_m) / math.floor(roll_length_m / self.height))
+            return math.floor(self.width / roll_width_m) / math.floor(roll_length_m / self.height)
         except ZeroDivisionError:
             print("There is no enough of wallpapers")
             # all class thanks to Oleh Smaha
