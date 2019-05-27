@@ -1,0 +1,1 @@
+ERROR     ;message time: 2019-05-25 12:09:52,909; Module where message was raised: loading_configuration: Number of line where message was raised: 20 Name of func where m was raised: log_error Lets see our error
