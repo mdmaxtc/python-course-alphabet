@@ -27,11 +27,5 @@ def movie_page(title):
     return render_template('movies.html', title='Movies list', movies=MOVIES)
 
 
-@app.route('/random_movie')
-def random_movie_page():
-    random_movie = random.choice(MOVIES)
-    return render_template('movie.html', movie=random_movie)
-
-
 if __name__ == '__main__':
     app.run(debug=True)
