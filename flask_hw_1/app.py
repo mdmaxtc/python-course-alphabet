@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, flash, url_for
 from flask_restful import abort
 
 from home import home
@@ -20,7 +20,7 @@ def page_not_implemented():
 
 @app.errorhandler(404)
 def error_404_handler(error):
-    return "Page doesn`t exist (:"
+    return "Page doesn`t exist"
 
 
 if __name__ == '__main__':
