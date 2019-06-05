@@ -1,11 +1,47 @@
-{% extends "base.html" %}
-{% block title %} Vegetables {% endblock %}
+{% extends "layout.html" %}
+{% block title %} Fruits {% endblock %}
 {% block head %}
     {{ super() }}
 {% endblock %}
 {% block content %}
-    {% for elem in values %}
-        <p>{{ elem }}</p>
+<center>
+<h1 class="my-5 py-5 text-center">Vegetables list</h1>
+</center>
+<div xmlns="">
+<style>
+ div {
+  padding: 20px 30px 40px;
+}
+p { font-weight: bold; }
+</style>
+    <a href= {{ url_for('home.home_page') }}>Back</a>
+    </div>
+<p>You can add your new vegetable here:</p>
+
+    <form method="POST" action="{{ url_for('vegetables.add_vegetable') }}">
+    <label for="title">Vegetable name</label>
+    <input name="vegetable" id="title" value="{{ request.form['vegetable']}}" required>
+
+
+    <input type="submit" value="Save">
+  </form>
+
+
+    </div>
+ <div class="row">
+    {% for vegetable in vegetables %}
+
+     <p>{{ vegetable }}
+
+<hr>
+    <form method="POST" action="{{ url_for('vegetables.del_vegetable') }}">
+        <input type="hidden" name="vegetable" value="{{ vegetable }}" />
+     <input type="submit" value="Delete" onclick="return confirm('Delete entry?')" />
+</form>
+</p>
+
+
     {% endfor %}
-    <a href={{ url_for('redirect_to_main') }}>Return to main page</a>
+</div>
+
 {% endblock %}

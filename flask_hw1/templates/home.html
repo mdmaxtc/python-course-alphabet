@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %} Home {% endblock %}
+
+{% block content %}
+
+    <h1>Home Menu</h1>
+
+    <ul>
+        <li><a href={{ url_for('fruits.fruits_page') }}> Fruits</a></li>
+        <li><a href={{ url_for('vegetables.vegetables_page') }}>Vegetables</a></li>
+    </ul>
+
+{% endblock %}

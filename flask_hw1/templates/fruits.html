@@ -1,11 +1,51 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
 {% block title %} Fruits {% endblock %}
-{% block head %}
-    {{ super() }}
-{% endblock %}
+
 {% block content %}
-    {% for elem in values %}
-        <p>{{ elem }}</p>
-    {% endfor %}
-    <a href={{ url_for('redirect_to_main') }}>Return to main page</a>
+
+
+<center>
+<h1 class="my-5 py-5 text-center">Fruits list</h1>
+</center>
+<div xmlns="">
+<style>
+ div {
+  padding: 20px 30px 40px;
+}
+p {
+font-weight: bold;
+}
+</style>
+
+    <a href= {{ url_for('home.home_page') }}>Back</a>
+
+    <p>You can add your new fruit here:</p>
+
+    <form method="POST" action="{{ url_for('fruits.add_fruit') }}">
+    <label for="title">Vegetable name</label>
+    <input name="fruit" id="title" value="{{ request.form['fruit']}}" required>
+
+
+    <input type="submit" value="Save">
+  </form>
+
+
+    </div>
+<div class="row">
+    {% for fruit in fruits %}
+
+     <p>{{ fruit }}
+
+<hr>
+     <form method="POST" action="{{ url_for('fruits.del_fruit') }}">
+        <input type="hidden" name="fruit" value="{{ fruit }}" />
+     <input type="submit" value="Delete" onclick="return confirm('Delete entry?')" />
+</form>
+</p>
+
+{% endfor %}
+
+</div>
+
+
 {% endblock %}
