@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
+
+<head>
     {% block head %}
     <link rel="stylesheet" type="text/css" href={{ url_for("static", filename='styl.css') }} />
     <title>{% block title %}{% endblock %}  </title>
     {% endblock %}
 </head>
-<body>
 
+
+<body>
     <div id="content">{% block content %}{% endblock %}</div>
 </body>
+
+
 </html>
