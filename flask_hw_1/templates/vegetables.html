@@ -28,7 +28,7 @@
     <form method="POST" action="{{ url_for('vegetables.del_vegetable') }}">
         <input type="hidden" name="vegetable" value="{{ vegetable }}" />
      <input type="submit" value="Delete" onclick="return confirm('Delete vegetable?')" />
-</form>
+ </form>
      </p>
     {% endfor %}
 </div>
